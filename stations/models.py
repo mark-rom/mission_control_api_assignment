@@ -5,7 +5,13 @@ User = get_user_model()
 
 
 class Station(models.Model):
-
+    """Модель космической станции.
+    :param name: название станции, не больше 100 символов
+    :param state: состояние станции "running" или "broken",
+    задается автоматически
+    :param created_at: дата запуска станции, задается автоматически
+    :param break_date: дата поломки станции, задается автоматически.
+    """
     STATE_CHOICES = [
         ('brk', 'broken'),
         ('run', 'running')
@@ -35,6 +41,13 @@ class Station(models.Model):
 
 
 class Directive(models.Model):
+    """Модель указания.
+    :param user: пользователь, дающий указания, экземпляр User
+    :param axis: ось движения, "x", "y" или "z"
+    :param distance: расстояние смещения, integer
+    :param station: станция, которой дают указание, экземпляр Station
+    :param created_at: дата указания.
+    """
     AXIS_CHOICES = [
         ('x', 'x'),
         ('y', 'y'),
@@ -67,6 +80,12 @@ class Directive(models.Model):
 
 
 class Coordinates(models.Model):
+    """Координаты станции.
+    Связаны со станцией отношением один к одному.
+    :param x: значение по оси x, при запуске равно 100
+    :param y: значение по оси y, при запуске равно 100
+    :param z: значение по оси z, при запуске равно 100.
+    """
     station = models.OneToOneField(
         Station, on_delete=models.DO_NOTHING, verbose_name='Станция',
     )

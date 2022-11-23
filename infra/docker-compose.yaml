@@ -1,0 +1,26 @@
+version: '3.3'
+
+services:
+  db:
+    image: postgres:13.0-alpine
+    volumes:
+      - stations_db:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+  web:
+    build: ../
+    restart: always
+    volumes:
+      - static_web:/app/backend_static/
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    environment:
+      - DJANGO_SETTINGS_MODULE=space_stations.settings.production
+    env_file:
+      - ./.env
+
+volumes:
+  stations_db:
+  static_web:

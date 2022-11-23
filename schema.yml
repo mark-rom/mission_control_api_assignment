@@ -1,0 +1,265 @@
+openapi: 3.0.3
+info:
+  title: Mission Control API
+  version: 1.0.0
+  description: An API for NASA Mission Control
+paths:
+  /api/v1/stations/:
+    get:
+      operationId: v1_stations_list
+      description: |-
+        Возвращает список всех космических станций.
+                Сервис доступен всем пользователям.
+      summary: Список космических станций
+      tags:
+      - Stations
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Station'
+          description: ''
+    post:
+      operationId: v1_stations_create
+      description: "Создает и возвращает космическую станцию.\n        Сервис доступен\
+        \ только пользователям с правами администратора\n        (is_staff, is_superuser).\n\
+        \        "
+      summary: Создание космической станции
+      tags:
+      - Stations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Station'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Station'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Station'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Station'
+          description: ''
+  /api/v1/stations/{id}/:
+    get:
+      operationId: v1_stations_retrieve
+      description: |-
+        Возвращает указанную космическую станцию.
+                Сервис доступен всем пользователям.
+      summary: Космическая станция
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Станция.
+        required: true
+      tags:
+      - Stations
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Station'
+          description: ''
+    put:
+      operationId: v1_stations_update
+      description: "Изменяет космическую станцию.\n        Сервис доступен только\
+        \ пользователям с правами администратора\n        (is_staff, is_superuser).\n\
+        \        "
+      summary: Изменение космической станции
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Станция.
+        required: true
+      tags:
+      - Stations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Station'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Station'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Station'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Station'
+          description: ''
+    delete:
+      operationId: v1_stations_destroy
+      description: "'Удаляет космическую станцию.\n        Сервис доступен только\
+        \ пользователям с правами администратора\n        (is_staff, is_superuser).\n\
+        \        "
+      summary: Удаление космической станции
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Станция.
+        required: true
+      tags:
+      - Stations
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/stations/{id}/state/:
+    get:
+      operationId: v1_stations_state_retrieve
+      description: Возвращает текущие координаты космической станции.
+      summary: Получение координат космической станции
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Станция.
+        required: true
+      tags:
+      - States
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Coordinates'
+          description: ''
+    post:
+      operationId: v1_stations_state_create
+      description: |-
+        Получает ось и значение, на которое сместится станция.
+        Если станция выходит за пределы положительных координат, "ломает" ее.
+      summary: Смещение космической станции
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Станция.
+        required: true
+      tags:
+      - States
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Directive'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Directive'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Directive'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Coordinates'
+          description: ''
+components:
+  schemas:
+    AxisEnum:
+      enum:
+      - x
+      - y
+      - z
+      type: string
+    Coordinates:
+      type: object
+      properties:
+        x:
+          type: integer
+        y:
+          type: integer
+        z:
+          type: integer
+    Directive:
+      type: object
+      properties:
+        user:
+          type: integer
+          readOnly: true
+        axis:
+          allOf:
+          - $ref: '#/components/schemas/AxisEnum'
+          title: Ось
+        distance:
+          type: integer
+          title: Расстояние
+      required:
+      - axis
+      - distance
+      - user
+    Station:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: Название станции
+          maxLength: 100
+        state:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата запуска
+        break_date:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          title: Дата поломки
+      required:
+      - break_date
+      - created_at
+      - id
+      - name
+      - state
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
