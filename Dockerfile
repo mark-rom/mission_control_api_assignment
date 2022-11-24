@@ -9,7 +9,5 @@ RUN poetry config virtualenvs.create false
 RUN poetry install --without dev
 
 ENV PYTHONPATH=${PYTHONPATH}:${PWD}
-RUN python3 manage.py migrate
-
 
 CMD ["gunicorn", "space_stations.wsgi:application", "--bind", "0:8000" ]

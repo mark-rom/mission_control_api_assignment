@@ -19,5 +19,3 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT', default='5432')
     }
 }
-
-STATIC_ROOT = BASE_DIR / 'backend_static/'

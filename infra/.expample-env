@@ -1,5 +1,5 @@
 SECRET_KEY=
-DEBUG=
+DEBUG= # Если установить True, приложение выйдет без статики, тк статика раздается nginx, который не предусмотрен заданием
 DB_ENGINE=
 DB_NAME=
 POSTGRES_USER=
