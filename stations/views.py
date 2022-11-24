@@ -69,34 +69,30 @@ class StationViewSet(ModelViewSet):
 
     @extend_schema(
         summary='Получение координат космической станции',
+        description="""Возвращает текущие координаты космической станции.""",
+        responses=CoordinatesSerializer,
         auth=[], tags=['States']
     )
     @action(
-        methods=['get'], detail=True,
-        serializer_class=CoordinatesSerializer, url_path='state',
-        url_name='state_retrieve'
+        methods=['get'], detail=True, url_path='state',
+        serializer_class=DirectiveSerializer,
     )
-    def state_get(self, request, pk):
+    def state(self, request, pk):
         """Возвращает текущие координаты космической станции."""
         coordinates = get_object_or_404(Coordinates, station_id=pk)
 
-        serializer = self.get_serializer(coordinates)
+        serializer = CoordinatesSerializer(coordinates)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(
         summary='Смещение космической станции',
-        responses={
-            200: CoordinatesSerializer,
-            # 400: inline_serializer(name='Error400', fields={'field_name': serializers.CharField(many=True)}),
-            # 404: inline_serializer(name='Error404', fields={'detail': serializers.CharField()})
-        },
+        responses=CoordinatesSerializer,
         tags=['States'],
+        description="""Получает ось и значение, на которое сместится станция.
+        Если станция выходит за пределы положительных координат, "ломает" ее.
+        """
     )
-    @action(
-        methods=['post'], detail=True,
-        serializer_class=DirectiveSerializer, url_path='state',
-        url_name='state_post'
-    )
+    @state.mapping.post
     def state_post(self, request, pk):
         """Получает ось и значение, на которое сместится станция.
         Если станция выходит за пределы положительных координат, "ломает" ее.

@@ -16,7 +16,7 @@ def get_axis_and_distance(serializer: ModelSerializer) -> Tuple[str, int]:
 
 
 def create_directive(view: ModelViewSet, request: Request, station_id: int):
-
+    """Создает указание."""
     serializer = DirectiveSerializer(
         data=request.data,
         context={
@@ -32,7 +32,7 @@ def create_directive(view: ModelViewSet, request: Request, station_id: int):
 
 
 def update_coordinates(instance: Coordinates, axis: str, distance: int):
-
+    """Обновляет координаты станции."""
     attr = instance.__getattribute__(axis)
     serializer = CoordinatesSerializer(
         instance=instance, data={axis: attr+distance}
@@ -44,15 +44,15 @@ def update_coordinates(instance: Coordinates, axis: str, distance: int):
 
 
 def break_the_station(station: Station):
-
+    """Изменяет статус станции на "broken"."""
     station.break_date = datetime.now()
-    station.state = 'b'
+    station.state = 'brk'
     station.save()
 
 
 def check_coords_and_break_station_if_needed(
     coord_distance: int, station: Station
 ):
-
+    """Проверяет необходимость изменить статус станции."""
     if coord_distance < 1 and not station.break_date:
         break_the_station(station)

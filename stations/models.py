@@ -65,7 +65,7 @@ class Directive(models.Model):
         verbose_name='Расстояние',
     )
     station = models.ForeignKey(
-        Station, on_delete=models.DO_NOTHING, related_name='directives'
+        Station, on_delete=models.CASCADE, related_name='directives'
     )
     created_at = models.DateTimeField(
         verbose_name='Дата запуска', auto_now_add=True, editable=False
@@ -87,7 +87,7 @@ class Coordinates(models.Model):
     :param z: значение по оси z, при запуске равно 100.
     """
     station = models.OneToOneField(
-        Station, on_delete=models.DO_NOTHING, verbose_name='Станция',
+        Station, on_delete=models.CASCADE, verbose_name='Станция',
     )
     x = models.SmallIntegerField(
         verbose_name='Координата по x', default=100
